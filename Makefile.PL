@@ -1,8 +1,5 @@
 use ExtUtils::MakeMaker;
 
-# autogen Scintilla.pm
-do '.\include\autogen.pl';
-
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
 WriteMakefile(
@@ -15,7 +12,7 @@ WriteMakefile(
     },
     ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
       (ABSTRACT => 'Add Scintilla control to Win32::GUI',
-       AUTHOR   => 'ROCHER Laurent (rocherl@club-internet.fr)') : ()),
+       AUTHOR   => 'ROCHER Laurent (lrocher@cpan.org)') : ()),
     'LIBS'              => [''], # e.g., '-lm'
     'DEFINE'            => '', # e.g., '-DHAVE_SOMETHING'
         # Insert -I. if you add *.h files later:
@@ -24,11 +21,18 @@ WriteMakefile(
     # 'OBJECT'          => '$(O_FILES)', # link all the C files too
 );
 
-# Copy SciLexer.DLL
-mkdir './blib';
-mkdir './blib/arch';
-mkdir './blib/arch/auto';
-mkdir './blib/arch/auto/Win32/';
-mkdir './blib/arch/auto/Win32/GUI';
-mkdir './blib/arch/auto/Win32/GUI/Scintilla';
-system ('copy .\include\SciLexer.dll .\blib\arch\auto\Win32\GUI\Scintilla\SciLexer.dll');
+sub MY::postamble {
+
+return <<'MAKE_FRAG';
+
+Scintilla.pm : Scintilla.pm.begin Scintilla.pm.end include/Scintilla.iface include/autogen.pl
+	$(PERL) ./include/autogen.pl
+
+config :: $(INST_ARCHAUTODIR)/SciLexer.dll
+	@$(NOOP)
+
+$(INST_ARCHAUTODIR)/SciLexer.dll : include/SciLexer.dll
+	$(CP) ./include/SciLexer.dll $(INST_ARCHAUTODIR)/SciLexer.dll
+
+MAKE_FRAG
+}

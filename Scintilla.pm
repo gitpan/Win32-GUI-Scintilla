@@ -1,6 +1,6 @@
 #------------------------------------------------------------------------
 # Scintilla control for Win32::GUI
-# by Laurent ROCHER (rocherl@club-internet.fr)
+# by Laurent ROCHER (lrocher@cpan.org)
 #------------------------------------------------------------------------
 #perl2exe_bundle 'SciLexer.dll'
 
@@ -16,7 +16,7 @@ require AutoLoader;
 
 @ISA = qw(Exporter DynaLoader Win32::GUI::Window);
 
-$VERSION = '1.5';
+$VERSION = '1.6';
 
 bootstrap Win32::GUI::Scintilla $VERSION;
 
@@ -745,6 +745,7 @@ sub SetCaretPeriod {
   return $self->SendMessage (2076, $periodMilliseconds, 0);
 }
 # Set the set of characters making up words for when moving or selecting by word.
+# First sets deaults like SetCharsDefault.
 sub SetWordChars {
   my ($self, $characters) = @_;
   return $self->SendMessageNP (2077, 0, $characters);
@@ -2445,12 +2446,12 @@ sub GetSelectionMode {
   my $self = shift;
   return $self->SendMessage (2423, 0, 0);
 }
-# Retrieve the position of the start of the selection at the given line (INVALID_POSITION of no selection on this line).
+# Retrieve the position of the start of the selection at the given line (INVALID_POSITION if no selection on this line).
 sub GetLineSelStartPosition {
   my ($self, $line) = @_;
   return $self->SendMessage (2424, $line, 0);
 }
-# Retrieve the position of the end of the selection at the given line (INVALID_POSITION of no selection on this line).
+# Retrieve the position of the end of the selection at the given line (INVALID_POSITION if no selection on this line).
 sub GetLineSelEndPosition {
   my ($self, $line) = @_;
   return $self->SendMessage (2425, $line, 0);
@@ -2501,6 +2502,57 @@ sub PageUpRectExtend {
 sub PageDownRectExtend {
   my $self = shift;
   return $self->SendMessage (2434, 0, 0);
+}
+# Move caret to top of page, or one page up if already at top of page.
+sub StutteredPageUp {
+  my $self = shift;
+  return $self->SendMessage (2435, 0, 0);
+}
+# Move caret to top of page, or one page up if already at top of page, extending selection to new caret position.
+sub StutteredPageUpExtend {
+  my $self = shift;
+  return $self->SendMessage (2436, 0, 0);
+}
+# Move caret to bottom of page, or one page down if already at bottom of page.
+sub StutteredPageDown {
+  my $self = shift;
+  return $self->SendMessage (2437, 0, 0);
+}
+# Move caret to bottom of page, or one page down if already at bottom of page, extending selection to new caret position.
+sub StutteredPageDownExtend {
+  my $self = shift;
+  return $self->SendMessage (2438, 0, 0);
+}
+# Move caret left one word, position cursor at end of word.
+sub WordLeftEnd {
+  my $self = shift;
+  return $self->SendMessage (2439, 0, 0);
+}
+# Move caret left one word, position cursor at end of word, extending selection to new caret position.
+sub WordLeftEndExtend {
+  my $self = shift;
+  return $self->SendMessage (2440, 0, 0);
+}
+# Move caret right one word, position cursor at end of word.
+sub WordRightEnd {
+  my $self = shift;
+  return $self->SendMessage (2441, 0, 0);
+}
+# Move caret right one word, position cursor at end of word, extending selection to new caret position.
+sub WordRightEndExtend {
+  my $self = shift;
+  return $self->SendMessage (2442, 0, 0);
+}
+# Set the set of characters making up whitespace for when moving or selecting by word.
+# Should be called after SetWordChars.
+sub SetWhitespaceChars {
+  my ($self, $characters) = @_;
+  return $self->SendMessageNP (2443, 0, $characters);
+}
+# Reset the set of characters for whitespace and word characters to the defaults.
+sub SetCharsDefault {
+  my $self = shift;
+  return $self->SendMessage (2444, 0, 0);
 }
 # Start notifying the container of all key presses and commands.
 sub StartRecord {
@@ -2649,6 +2701,7 @@ use constant SCLEX_TEX => 49 ;
 use constant SCLEX_METAPOST => 50 ;
 use constant SCLEX_POWERBASIC => 51 ;
 use constant SCLEX_FORTH => 52 ;
+use constant SCLEX_ERLANG => 53 ;
 # When a lexer specifies its language as SCLEX_AUTOMATIC it receives a
 # value assigned in sequence from SCLEX_AUTOMATIC+1.
 use constant SCLEX_AUTOMATIC => 1000 ;
@@ -3287,6 +3340,23 @@ use constant SCE_METAPOST_SYMBOL => 3 ;
 use constant SCE_METAPOST_COMMAND => 4 ;
 use constant SCE_METAPOST_TEXT => 5 ;
 use constant SCE_METAPOST_EXTRA => 6 ;
+# Lexical states for SCLEX_ERLANG
+# Erlang=SCLEX_ERLANG SCE_ERLANG_
+use constant SCE_ERLANG_DEFAULT => 0 ;
+use constant SCE_ERLANG_COMMENT => 1 ;
+use constant SCE_ERLANG_VARIABLE => 2 ;
+use constant SCE_ERLANG_NUMBER => 3 ;
+use constant SCE_ERLANG_KEYWORD => 4 ;
+use constant SCE_ERLANG_STRING => 5 ;
+use constant SCE_ERLANG_OPERATOR => 6 ;
+use constant SCE_ERLANG_ATOM => 7 ;
+use constant SCE_ERLANG_FUNCTION_NAME => 8 ;
+use constant SCE_ERLANG_CHARACTER => 9 ;
+use constant SCE_ERLANG_MACRO => 10 ;
+use constant SCE_ERLANG_RECORD => 11 ;
+use constant SCE_ERLANG_SEPARATOR => 12 ;
+use constant SCE_ERLANG_NODE_NAME => 13 ;
+use constant SCE_ERLANG_UNKNOWN => 31 ;
 # Events
 # GTK+ Specific to work around focus and accelerator problems:
 # CARET_POLICY changed in 1.47
@@ -4270,6 +4340,7 @@ __END__
 =item C<SetWordChars> (characters)
 
   Set the set of characters making up words for when moving or selecting by word.
+  First sets defaults like SetCharsDefault.
 
 =item C<BeginUndoAction>
 
@@ -5620,11 +5691,11 @@ __END__
 
 =item C<GetLineSelStartPosition> (line)
 
-  Retrieve the position of the start of the selection at the given line (INVALID_POSITION of no selection on this line).
+  Retrieve the position of the start of the selection at the given line (INVALID_POSITION if no selection on this line).
 
 =item C<GetLineSelEndPosition> (line)
 
-  Retrieve the position of the end of the selection at the given line (INVALID_POSITION of no selection on this line).
+  Retrieve the position of the end of the selection at the given line (INVALID_POSITION if no selection on this line).
 
 =item C<LineDownRectExtend>
 
@@ -5663,6 +5734,47 @@ __END__
 =item C<PageDownRectExtend>
 
   Move caret one page down, extending rectangular selection to new caret position.
+
+=item C<StutteredPageUp>
+
+  Move caret to top of page, or one page up if already at top of page.
+
+=item C<StutteredPageUpExtend>
+
+  Move caret to top of page, or one page up if already at top of page, extending selection to new caret position.
+
+=item C<StutteredPageDown>
+
+  Move caret to bottom of page, or one page down if already at bottom of page.
+
+=item C<StutteredPageDownExtend>
+
+  Move caret to bottom of page, or one page down if already at bottom of page, extending selection to new caret position.
+
+=item C<WordLeftEnd>
+
+  Move caret left one word, position cursor at end of word.
+
+=item C<WordLeftEndExtend>
+
+  Move caret left one word, position cursor at end of word, extending selection to new caret position.
+
+=item C<WordRightEnd>
+
+  Move caret right one word, position cursor at end of word.
+
+=item C<WordRightEndExtend>
+
+  Move caret right one word, position cursor at end of word, extending selection to new caret position.
+
+=item C<SetWhitespaceChars> (characters)
+
+  Set the set of characters making up whitespace for when moving or selecting by word.
+  Should be called after SetWordChars.
+
+=item C<SetCharsDefault>
+
+  Reset the set of characters for whitespace and word characters to the defaults.
 
 =item C<StartRecord>
 

@@ -969,6 +969,7 @@ __END__
 =item C<SetWordChars> (characters)
 
   Set the set of characters making up words for when moving or selecting by word.
+  First sets defaults like SetCharsDefault.
 
 =item C<BeginUndoAction>
 
@@ -2319,11 +2320,11 @@ __END__
 
 =item C<GetLineSelStartPosition> (line)
 
-  Retrieve the position of the start of the selection at the given line (INVALID_POSITION of no selection on this line).
+  Retrieve the position of the start of the selection at the given line (INVALID_POSITION if no selection on this line).
 
 =item C<GetLineSelEndPosition> (line)
 
-  Retrieve the position of the end of the selection at the given line (INVALID_POSITION of no selection on this line).
+  Retrieve the position of the end of the selection at the given line (INVALID_POSITION if no selection on this line).
 
 =item C<LineDownRectExtend>
 
@@ -2362,6 +2363,47 @@ __END__
 =item C<PageDownRectExtend>
 
   Move caret one page down, extending rectangular selection to new caret position.
+
+=item C<StutteredPageUp>
+
+  Move caret to top of page, or one page up if already at top of page.
+
+=item C<StutteredPageUpExtend>
+
+  Move caret to top of page, or one page up if already at top of page, extending selection to new caret position.
+
+=item C<StutteredPageDown>
+
+  Move caret to bottom of page, or one page down if already at bottom of page.
+
+=item C<StutteredPageDownExtend>
+
+  Move caret to bottom of page, or one page down if already at bottom of page, extending selection to new caret position.
+
+=item C<WordLeftEnd>
+
+  Move caret left one word, position cursor at end of word.
+
+=item C<WordLeftEndExtend>
+
+  Move caret left one word, position cursor at end of word, extending selection to new caret position.
+
+=item C<WordRightEnd>
+
+  Move caret right one word, position cursor at end of word.
+
+=item C<WordRightEndExtend>
+
+  Move caret right one word, position cursor at end of word, extending selection to new caret position.
+
+=item C<SetWhitespaceChars> (characters)
+
+  Set the set of characters making up whitespace for when moving or selecting by word.
+  Should be called after SetWordChars.
+
+=item C<SetCharsDefault>
+
+  Reset the set of characters for whitespace and word characters to the defaults.
 
 =item C<StartRecord>
 

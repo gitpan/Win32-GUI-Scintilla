@@ -1,5 +1,9 @@
 Revision history for Perl extension Scintilla.
 
+1.6  30/11/2003
+        - Use Scintilla 1.57
+	- Rewrite Makefile.pl
+
 1.5  28/10/2003
         - Use Scintilla 1.56
 
