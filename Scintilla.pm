@@ -16,7 +16,7 @@ require AutoLoader;
 
 @ISA = qw(Exporter DynaLoader Win32::GUI::Window);
 
-$VERSION = '1.6';
+$VERSION = '1.7';
 
 bootstrap Win32::GUI::Scintilla $VERSION;
 
@@ -211,7 +211,7 @@ sub StyleSetSpec {
 #------------------------------------------------------------------------
 
 use constant INVALID_POSITION => -1 ;
-# Define start of Scintilla messages to be greater than all edit (EM_*) messages
+# Define start of Scintilla messages to be greater than all Windows edit (EM_*) messages
 # as many EM_ messages can be used although that use is deprecated.
 use constant SCI_START => 2000 ;
 use constant SCI_OPTIONAL_START => 3000 ;
@@ -293,7 +293,7 @@ sub SetSavePoint {
   return $self->SendMessage (2014, 0, 0);
 }
 # Retrieve a buffer of cells.
-# Returns the number of bytes in the buffer not including terminating nulls.
+# Returns the number of bytes in the buffer not including terminating NULs.
 sub GetStyledText {
   my $self = shift;
   my $start = shift || 0;
@@ -713,7 +713,7 @@ sub AssignCmdKey {
   my $param = pack ('ss', $key, $modifiers);
   return $self->SendMessage (2070, $param, $msg);
 }
-# When key+modifier combination km do nothing.
+# When key+modifier combination km is pressed do nothing.
 sub ClearCmdKey {
   my ($self, $key, $modifiers) = @_;
   my $param = pack ('ss', $key, $modifiers);
@@ -1437,7 +1437,7 @@ sub GetTargetEnd {
   return $self->SendMessage (2193, 0, 0);
 }
 # Replace the target text with the argument text.
-# Text is counted so it can contain nulls.
+# Text is counted so it can contain NULs.
 # Returns the length of the replacement text.
 # ReplaceTarget(text)
 sub ReplaceTarget {
@@ -1446,7 +1446,7 @@ sub ReplaceTarget {
   return $self->SendMessageNP (2194, $length, $text);
 }
 # Replace the target text with the argument text after \d processing.
-# Text is counted so it can contain nulls.
+# Text is counted so it can contain NULs.
 # Looks for \d where d is between 1 and 9 and replaces these with the strings
 # matched in the last search operation which were surrounded by \( and \).
 # Returns the length of the replacement text including any change
@@ -1458,7 +1458,7 @@ sub ReplaceTargetRE {
   return $self->SendMessageNP (2195, $length, $text);
 }
 # Search for a counted string in the target and set the target to the found
-# range. Text is counted so it can contain nulls.
+# range. Text is counted so it can contain NULs.
 # Returns length of range or -1 for failure in which case target is not moved.
 # SearchInTarget(text)
 sub SearchInTarget {
@@ -1689,7 +1689,7 @@ sub GetScrollWidth {
   return $self->SendMessage (2275, 0, 0);
 }
 # Measure the pixel width of some text in a particular style.
-# Nul terminated text argument.
+# NUL terminated text argument.
 # Does not handle tab or control characters.
 sub TextWidth {
   my ($self, $style, $text) = @_;
@@ -2314,7 +2314,7 @@ sub GetXOffset {
   my $self = shift;
   return $self->SendMessage (2398, 0, 0);
 }
-# Set the last x chosen value to be the caret x position
+# Set the last x chosen value to be the caret x position.
 sub ChooseCaretX {
   my $self = shift;
   return $self->SendMessage (2399, 0, 0);
@@ -2364,7 +2364,7 @@ sub SetPrintWrapMode {
   my ($self, $mode) = @_;
   return $self->SendMessage (2406, $mode, 0);
 }
-# Is printing line wrapped.
+# Is printing line wrapped?
 sub GetPrintWrapMode {
   my $self = shift;
   return $self->SendMessage (2407, 0, 0);
@@ -2391,7 +2391,7 @@ sub SetHotspotSingleLine {
   my ($self, $singleLine) = @_;
   return $self->SendMessage (2421, $singleLine, 0);
 }
-# Move caret between paragraphs (delimited by empty lines)
+# Move caret between paragraphs (delimited by empty lines).
 sub ParaDown {
   my $self = shift;
   return $self->SendMessage (2413, 0, 0);
@@ -2554,6 +2554,16 @@ sub SetCharsDefault {
   my $self = shift;
   return $self->SendMessage (2444, 0, 0);
 }
+# Get currently selected item position in the auto-completion list
+sub AutoCGetCurrent {
+  my $self = shift;
+  return $self->SendMessage (2445, 0, 0);
+}
+# Enlarge the document to a particular size of text bytes.
+sub Allocate {
+  my ($self, $bytes) = @_;
+  return $self->SendMessage (2446, $bytes, 0);
+}
 # Start notifying the container of all key presses and commands.
 sub StartRecord {
   my $self = shift;
@@ -2596,7 +2606,7 @@ sub SetLexerLanguage {
   my ($self, $language) = @_;
   return $self->SendMessageNP (4006, 0, $language);
 }
-# Load a lexer library (dll / so)
+# Load a lexer library (dll / so).
 sub LoadLexerLibrary {
   my ($self, $path) = @_;
   return $self->SendMessageNP (4007, 0, $path);
@@ -2702,6 +2712,9 @@ use constant SCLEX_METAPOST => 50 ;
 use constant SCLEX_POWERBASIC => 51 ;
 use constant SCLEX_FORTH => 52 ;
 use constant SCLEX_ERLANG => 53 ;
+use constant SCLEX_OCTAVE => 54 ;
+use constant SCLEX_MSSQL => 55 ;
+use constant SCLEX_VERILOG => 56 ;
 # When a lexer specifies its language as SCLEX_AUTOMATIC it receives a
 # value assigned in sequence from SCLEX_AUTOMATIC+1.
 use constant SCLEX_AUTOMATIC => 1000 ;
@@ -2919,6 +2932,12 @@ use constant SCE_B_PREPROCESSOR => 5 ;
 use constant SCE_B_OPERATOR => 6 ;
 use constant SCE_B_IDENTIFIER => 7 ;
 use constant SCE_B_DATE => 8 ;
+use constant SCE_B_STRINGEOL => 9 ;
+use constant SCE_B_KEYWORD2 => 10 ;
+use constant SCE_B_KEYWORD3 => 11 ;
+use constant SCE_B_KEYWORD4 => 12 ;
+use constant SCE_B_CONSTANT => 13 ;
+use constant SCE_B_ASM => 14 ;
 # Lexical states for SCLEX_PROPERTIES
 # Properties=SCLEX_PROPERTIES SCE_PROPS_
 use constant SCE_PROPS_DEFAULT => 0 ;
@@ -2974,6 +2993,8 @@ use constant SCE_ERR_DIFF_MESSAGE => 13 ;
 use constant SCE_ERR_PHP => 14 ;
 use constant SCE_ERR_ELF => 15 ;
 use constant SCE_ERR_IFC => 16 ;
+use constant SCE_ERR_IFORT => 17 ;
+use constant SCE_ERR_ABSF => 18 ;
 # Lexical states for SCLEX_BATCH
 # Batch=SCLEX_BATCH SCE_BAT_
 use constant SCE_BAT_DEFAULT => 0 ;
@@ -3114,9 +3135,11 @@ use constant SCE_MATLAB_COMMENT => 1 ;
 use constant SCE_MATLAB_COMMAND => 2 ;
 use constant SCE_MATLAB_NUMBER => 3 ;
 use constant SCE_MATLAB_KEYWORD => 4 ;
+# single quoted string
 use constant SCE_MATLAB_STRING => 5 ;
 use constant SCE_MATLAB_OPERATOR => 6 ;
 use constant SCE_MATLAB_IDENTIFIER => 7 ;
+use constant SCE_MATLAB_DOUBLEQUOTESTRING => 8 ;
 # Lexical states for SCLEX_SCRIPTOL
 # Sol=SCLEX_SCRIPTOL SCE_SCRIPTOL_
 use constant SCE_SCRIPTOL_DEFAULT => 0 ;
@@ -3267,6 +3290,7 @@ use constant SCE_NSIS_SUBSECTIONDEF => 10 ;
 use constant SCE_NSIS_IFDEFINEDEF => 11 ;
 use constant SCE_NSIS_MACRODEF => 12 ;
 use constant SCE_NSIS_STRINGVAR => 13 ;
+use constant SCE_NSIS_NUMBER => 14 ;
 # Lexical states for SCLEX_MMIXAL
 # MMIXAL=SCLEX_MMIXAL SCE_MMIXAL_
 use constant SCE_MMIXAL_LEADWS => 0 ;
@@ -3357,6 +3381,40 @@ use constant SCE_ERLANG_RECORD => 11 ;
 use constant SCE_ERLANG_SEPARATOR => 12 ;
 use constant SCE_ERLANG_NODE_NAME => 13 ;
 use constant SCE_ERLANG_UNKNOWN => 31 ;
+# Lexical states for SCLEX_OCTAVE are identical to MatLab
+# Octave=SCLEX_OCTAVE SCE_MATLAB_
+# Lexical states for SCLEX_MSSQL
+# MSSQL=SCLEX_MSSQL SCE_MSSQL_
+use constant SCE_MSSQL_DEFAULT => 0 ;
+use constant SCE_MSSQL_COMMENT => 1 ;
+use constant SCE_MSSQL_LINE_COMMENT => 2 ;
+use constant SCE_MSSQL_NUMBER => 3 ;
+use constant SCE_MSSQL_STRING => 4 ;
+use constant SCE_MSSQL_OPERATOR => 5 ;
+use constant SCE_MSSQL_IDENTIFIER => 6 ;
+use constant SCE_MSSQL_VARIABLE => 7 ;
+use constant SCE_MSSQL_COLUMN_NAME => 8 ;
+use constant SCE_MSSQL_STATEMENT => 9 ;
+use constant SCE_MSSQL_DATATYPE => 10 ;
+use constant SCE_MSSQL_SYSTABLE => 11 ;
+use constant SCE_MSSQL_GLOBAL_VARIABLE => 12 ;
+use constant SCE_MSSQL_FUNCTION => 13 ;
+# Lexical states for SCLEX_VERILOG
+# Verilog=SCLEX_VERILOG SCE_V_
+use constant SCE_V_DEFAULT => 0 ;
+use constant SCE_V_COMMENT => 1 ;
+use constant SCE_V_COMMENTLINE => 2 ;
+use constant SCE_V_COMMENTLINEBANG => 3 ;
+use constant SCE_V_NUMBER => 4 ;
+use constant SCE_V_WORD => 5 ;
+use constant SCE_V_STRING => 6 ;
+use constant SCE_V_WORD2 => 7 ;
+use constant SCE_V_WORD3 => 8 ;
+use constant SCE_V_PREPROCESSOR => 9 ;
+use constant SCE_V_OPERATOR => 10 ;
+use constant SCE_V_IDENTIFIER => 11 ;
+use constant SCE_V_STRINGEOL => 12 ;
+use constant SCE_V_USER => 19 ;
 # Events
 # GTK+ Specific to work around focus and accelerator problems:
 # CARET_POLICY changed in 1.47
@@ -3969,7 +4027,7 @@ __END__
 
 =item C<GetStyledText> (start=0, end=TextLength)
 
-  Returns the number of bytes in the buffer not including terminating nulls.
+  Returns the number of bytes in the buffer not including terminating NULs.
 
 =item C<CanRedo>
 
@@ -4315,7 +4373,7 @@ __END__
 
 =item C<ClearCmdKey> (key, modifiers)
 
-  When key+modifier combination km do nothing.
+  When key+modifier combination km is pressed do nothing.
 
 =item C<ClearAllCmdKeys>
 
@@ -4852,11 +4910,13 @@ __END__
 =item C<ReplaceTarget> (text)
 
   Replace the target text with the argument text.
+  Text is counted so it can contain NULs.
   Returns the length of the replacement text.
 
 =item C<ReplaceTargetRE> ($text)
 
   Replace the target text with the argument text after \d processing.
+  Text is counted so it can contain NULs.
   Looks for \d where d is between 1 and 9 and replaces these with the strings
   matched in the last search operation which were surrounded by \( and \).
   Returns the length of the replacement text including any change
@@ -4865,7 +4925,7 @@ __END__
 =item C<SearchInTarget> (text)
 
   Search for a counted string in the target and set the target to the found
-  range. Text is counted so it can contain nulls.
+  range. Text is counted so it can contain NULs.
   Returns length of range or -1 for failure in which case target is not moved.
 
 =item C<SetSearchFlags> (flags)
@@ -5066,7 +5126,7 @@ __END__
 =item C<TextWidth> (style, text)
 
   Measure the pixel width of some text in a particular style.
-  Nul terminated text argument.
+  NUL terminated text argument.
   Does not handle tab or control characters.
 
 =item C<SetEndAtLastLine> (endAtLastLine)
@@ -5580,7 +5640,7 @@ __END__
 
 =item C<ChooseCaretX>
 
-  Set the last x chosen value to be the caret x position
+  Set the last x chosen value to be the caret x position.
 
 =item C<GrabFocus>
 
@@ -5629,7 +5689,7 @@ __END__
 
 =item C<GetPrintWrapMode>
 
-  Is printing line wrapped.
+  Is printing line wrapped?
 
 =item C<SetHotspotActiveFore> (useSetting, color)
 
@@ -5649,19 +5709,19 @@ __END__
 
 =item C<ParaDown>
 
-  Move caret between paragraphs (delimited by empty lines)
+  Move caret between paragraphs (delimited by empty lines).
 
 =item C<ParaDownExtend>
 
-  Move caret between paragraphs (delimited by empty lines)
+  Move caret between paragraphs (delimited by empty lines).
 
 =item C<ParaUp>
 
-  Move caret between paragraphs (delimited by empty lines)
+  Move caret between paragraphs (delimited by empty lines).
 
 =item C<ParaUpExtend>
 
-  Move caret between paragraphs (delimited by empty lines)
+  Move caret between paragraphs (delimited by empty lines).
 
 =item C<PositionBefore> (pos)
 
@@ -5775,6 +5835,14 @@ __END__
 =item C<SetCharsDefault>
 
   Reset the set of characters for whitespace and word characters to the defaults.
+
+=item C<AutoCGetCurrent>
+
+  Get currently selected item position in the auto-completion list.
+
+=item C<Allocate> (bytes)
+
+  Enlarge the document to a particular size of text bytes.
 
 =item C<StartRecord>
 

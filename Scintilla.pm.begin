@@ -16,7 +16,7 @@ require AutoLoader;
 
 @ISA = qw(Exporter DynaLoader Win32::GUI::Window);
 
-$VERSION = '1.6';
+$VERSION = '1.7';
 
 bootstrap Win32::GUI::Scintilla $VERSION;
 

@@ -172,7 +172,7 @@ while ( <F> )
   }
 
   # GetSelText
-  elsif (/^fun int GetSelText=2161\(,stringresult text\)/)
+  elsif (/^fun int GetSelText=2161\(, stringresult text\)/)
   {
     print G '# GetSelText() : Return selected text', "\n";
     print G 'sub GetSelText {', "\n";
@@ -221,7 +221,7 @@ while ( <F> )
     print G '}', "\n";
   }
   # FindRange :
-  elsif (/^fun void FormatRange=2151\(bool draw, formatrange fr\)/)
+  elsif (/^fun position FormatRange=2151\(bool draw, formatrange fr\)/)
   {
     print G '# FormatRange (start=0, end=GetLength(), draw=1)', "\n";
     print G 'sub FormatRange {', "\n";

@@ -4,7 +4,7 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     'NAME'              => 'Win32::GUI::Scintilla',
-    'VERSION_FROM'      => 'Scintilla.pm', # finds $VERSION
+    'VERSION_FROM'      => 'Scintilla.pm.begin', # finds $VERSION
     'PREREQ_PM'         => {}, # e.g., Module::Name => 1.1
     'PM' => {
         'Scintilla.pm'  => '$(INST_LIBDIR)/Scintilla.pm',

@@ -598,7 +598,7 @@ __END__
 
 =item C<GetStyledText> (start=0, end=TextLength)
 
-  Returns the number of bytes in the buffer not including terminating nulls.
+  Returns the number of bytes in the buffer not including terminating NULs.
 
 =item C<CanRedo>
 
@@ -944,7 +944,7 @@ __END__
 
 =item C<ClearCmdKey> (key, modifiers)
 
-  When key+modifier combination km do nothing.
+  When key+modifier combination km is pressed do nothing.
 
 =item C<ClearAllCmdKeys>
 
@@ -1481,11 +1481,13 @@ __END__
 =item C<ReplaceTarget> (text)
 
   Replace the target text with the argument text.
+  Text is counted so it can contain NULs.
   Returns the length of the replacement text.
 
 =item C<ReplaceTargetRE> ($text)
 
   Replace the target text with the argument text after \d processing.
+  Text is counted so it can contain NULs.
   Looks for \d where d is between 1 and 9 and replaces these with the strings
   matched in the last search operation which were surrounded by \( and \).
   Returns the length of the replacement text including any change
@@ -1494,7 +1496,7 @@ __END__
 =item C<SearchInTarget> (text)
 
   Search for a counted string in the target and set the target to the found
-  range. Text is counted so it can contain nulls.
+  range. Text is counted so it can contain NULs.
   Returns length of range or -1 for failure in which case target is not moved.
 
 =item C<SetSearchFlags> (flags)
@@ -1695,7 +1697,7 @@ __END__
 =item C<TextWidth> (style, text)
 
   Measure the pixel width of some text in a particular style.
-  Nul terminated text argument.
+  NUL terminated text argument.
   Does not handle tab or control characters.
 
 =item C<SetEndAtLastLine> (endAtLastLine)
@@ -2209,7 +2211,7 @@ __END__
 
 =item C<ChooseCaretX>
 
-  Set the last x chosen value to be the caret x position
+  Set the last x chosen value to be the caret x position.
 
 =item C<GrabFocus>
 
@@ -2258,7 +2260,7 @@ __END__
 
 =item C<GetPrintWrapMode>
 
-  Is printing line wrapped.
+  Is printing line wrapped?
 
 =item C<SetHotspotActiveFore> (useSetting, color)
 
@@ -2278,19 +2280,19 @@ __END__
 
 =item C<ParaDown>
 
-  Move caret between paragraphs (delimited by empty lines)
+  Move caret between paragraphs (delimited by empty lines).
 
 =item C<ParaDownExtend>
 
-  Move caret between paragraphs (delimited by empty lines)
+  Move caret between paragraphs (delimited by empty lines).
 
 =item C<ParaUp>
 
-  Move caret between paragraphs (delimited by empty lines)
+  Move caret between paragraphs (delimited by empty lines).
 
 =item C<ParaUpExtend>
 
-  Move caret between paragraphs (delimited by empty lines)
+  Move caret between paragraphs (delimited by empty lines).
 
 =item C<PositionBefore> (pos)
 
@@ -2404,6 +2406,14 @@ __END__
 =item C<SetCharsDefault>
 
   Reset the set of characters for whitespace and word characters to the defaults.
+
+=item C<AutoCGetCurrent>
+
+  Get currently selected item position in the auto-completion list.
+
+=item C<Allocate> (bytes)
+
+  Enlarge the document to a particular size of text bytes.
 
 =item C<StartRecord>
 
